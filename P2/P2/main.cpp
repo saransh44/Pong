@@ -20,7 +20,7 @@ bool gameIsRunning = true;
 
 ShaderProgram plain;
 ShaderProgram textured;
-glm::mat4 viewMatrix, modelMatrix, projectionMatrix;
+glm::mat4 viewMatrix, projectionMatrix;
 
 
 //We will indicate winning with the texture as well as the color change in homage to the classic pong
@@ -29,6 +29,11 @@ GLuint winID;
 Entity rightPaddle, leftPaddle, ball;
 glm::vec3 paddleSizing = glm::vec3(0.3f, 1.2f, 0.0f);
 glm::vec3 ballSizing = glm::vec3(0.2f, 0.2f, 0.0f);
+
+
+float ballPosIncrementX = -0.002;
+float ballPosIncrementY = -0.002;
+
 
 GLuint LoadTexture(const char* filePath) {
     int w, h, n;
@@ -51,18 +56,57 @@ GLuint LoadTexture(const char* filePath) {
     return textureID;
 }
 
-//janky collision detection 
+float xDistanceFromPad1 = 0;
+float yDistanceFromPad1 = 0;
+
+float xDistanceFromPad2 = 0;
+float yDistanceFromPad2 = 0;
+
+
+
+//janky collision detection Woohoo
 void totallyNotFakeCollisionProtocol() {
 
-    if (ball.position.x > 4.80 || ball.position.x < -4.80) {
-        ball.position.x = 0;
-        ball.position.y = 0;
+    xDistanceFromPad1 = fabs(ball.position.x - leftPaddle.position.x);
+    yDistanceFromPad1 = fabs(ball.position.y - leftPaddle.position.y);
+
+    if (xDistanceFromPad1 < 0.05 && yDistanceFromPad1 < 0.65) {
+        ballPosIncrementX *= -1;
+    }
+
+    xDistanceFromPad2 = fabs(ball.position.x - rightPaddle.position.x);
+    yDistanceFromPad2 = fabs(ball.position.y - rightPaddle.position.y);
+
+    std::cout << yDistanceFromPad2 << std::endl;
+
+    if(xDistanceFromPad2 < 0.05 && yDistanceFromPad2 < 0.65) {
+        ballPosIncrementX *= -1;
+    }
+
+    if (ball.position.y > 3.6) {
+        ballPosIncrementY *= -1;
+
+    }
+
+    if (ball.position.y < -3.6) {
+        ballPosIncrementY *= -1;
+    }
+
+
+    if (ball.position.x > 4.80) {
+        ballPosIncrementX = 0.0;
+        ballPosIncrementY = 0.0;
+    }
+        
+    if (ball.position.x < -4.80) {
+        ballPosIncrementX = 0.0;
+        ballPosIncrementY = 0.0;
     }
 }
 
 void Initialize() {
     SDL_Init(SDL_INIT_VIDEO);
-    displayWindow = SDL_CreateWindow("Textured", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
+    displayWindow = SDL_CreateWindow("Pong", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
     SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
     SDL_GL_MakeCurrent(displayWindow, context);
 
@@ -75,7 +119,7 @@ void Initialize() {
     plain.Load("shaders/vertex_textured.glsl", "shaders/fragment_textured.glsl");
 
     viewMatrix = glm::mat4(1.0f);
-    modelMatrix = glm::mat4(1.0f);
+    //modelMatrix = glm::mat4(1.0f); //modelMatrix is used elegantly in Entity.cpp
     projectionMatrix = glm::ortho(-5.0f, 5.0f, -3.75f, 3.75f, -1.0f, 1.0f);
 
     plain.SetProjectionMatrix(projectionMatrix);
@@ -87,15 +131,14 @@ void Initialize() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    rightPaddle.speed = 1.0f;
+    //2rightPaddle.speed = 1.0f;
     rightPaddle.position = glm::vec3(4.25, 0, 0);
 
-
-    leftPaddle.speed = 1.0f;
+    //leftPaddle.speed = 1.0f;
     leftPaddle.position = glm::vec3(-4.25, 0, 0);
 
-    ball.speed = 3.5f;
-    ball.move = glm::vec3(0.75, 0.25, 0);
+    //ball.speed = 3.5f;
+    ball.position = glm::vec3(0, 0, 0);
 
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 }
@@ -161,9 +204,11 @@ void Update() {
 
     totallyNotFakeCollisionProtocol();
 
-    leftPaddle.Update(deltaTime);
-    rightPaddle.Update(deltaTime);
-    ball.Update(deltaTime);
+    ball.position.x += ballPosIncrementX;
+    ball.position.y += ballPosIncrementY;
+    //leftPaddle.Update(deltaTime);
+    //rightPaddle.Update(deltaTime);
+    //ball.Update(deltaTime);
 }
 
 void Render() {
