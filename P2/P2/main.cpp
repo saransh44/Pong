@@ -15,6 +15,17 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
+#include <ctime> 
+#include <cstdlib>
+#include <time.h>
+
+#include<stdlib.h>
+
+#include<stdio.h>
+
+#include<ctime>
+
+//using namespace std;
 SDL_Window* displayWindow;
 bool gameIsRunning = true;
 
@@ -31,8 +42,13 @@ glm::vec3 paddleSizing = glm::vec3(0.3f, 1.2f, 0.0f);
 glm::vec3 ballSizing = glm::vec3(0.2f, 0.2f, 0.0f);
 
 
-float ballPosIncrementX = -0.002;
-float ballPosIncrementY = -0.002;
+//float ballPosIncrementX = -0.002; //not random/fun enough
+//float ballPosIncrementY = -0.002;
+
+
+//need some kind of randomness so not every game starts out the same way srand in Initialize
+float ballPosIncrementX;
+float ballPosIncrementY;
 
 
 GLuint LoadTexture(const char* filePath) {
@@ -62,7 +78,8 @@ float yDistanceFromPad1 = 0;
 float xDistanceFromPad2 = 0;
 float yDistanceFromPad2 = 0;
 
-
+const float padCollisionWidth = .15;
+const float padCollisionHeight = .65;
 
 //janky collision detection Woohoo
 void totallyNotFakeCollisionProtocol() {
@@ -70,16 +87,16 @@ void totallyNotFakeCollisionProtocol() {
     xDistanceFromPad1 = fabs(ball.position.x - leftPaddle.position.x);
     yDistanceFromPad1 = fabs(ball.position.y - leftPaddle.position.y);
 
-    if (xDistanceFromPad1 < 0.05 && yDistanceFromPad1 < 0.65) {
+    if (xDistanceFromPad1 < padCollisionWidth && yDistanceFromPad1 < padCollisionHeight) {
         ballPosIncrementX *= -1;
     }
 
     xDistanceFromPad2 = fabs(ball.position.x - rightPaddle.position.x);
     yDistanceFromPad2 = fabs(ball.position.y - rightPaddle.position.y);
 
-    std::cout << yDistanceFromPad2 << std::endl;
+    //std::cout << xDistanceFromPad2 << std::endl;
 
-    if(xDistanceFromPad2 < 0.05 && yDistanceFromPad2 < 0.65) {
+    if(xDistanceFromPad2 < padCollisionWidth && yDistanceFromPad2 < padCollisionHeight) {
         ballPosIncrementX *= -1;
     }
 
@@ -105,6 +122,11 @@ void totallyNotFakeCollisionProtocol() {
 }
 
 void Initialize() {
+    srand(time(0)); // Initialize random number generator.
+    ballPosIncrementX = (rand() % 15 / 10000.0) + 0.001;
+    ballPosIncrementY = (rand() % 15 / 10000.0) + 0.001;
+    //std::cout << ballPosIncrementY << std::endl;
+
     SDL_Init(SDL_INIT_VIDEO);
     displayWindow = SDL_CreateWindow("Pong", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
     SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
@@ -206,6 +228,9 @@ void Update() {
 
     ball.position.x += ballPosIncrementX;
     ball.position.y += ballPosIncrementY;
+
+    //ball.UpdatePos(ballPosIncrementX, ballPosIncrementY);
+
     //leftPaddle.Update(deltaTime);
     //rightPaddle.Update(deltaTime);
     //ball.Update(deltaTime);

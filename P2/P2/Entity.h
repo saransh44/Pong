@@ -26,6 +26,7 @@ public:
     
     Entity();
     
+    void UpdatePos(const float incrementX, const float incrementY);
     void Update(float deltaTime);
     void Render(ShaderProgram *program, glm::vec3 sizing);
 };

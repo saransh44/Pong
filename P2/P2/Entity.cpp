@@ -5,6 +5,11 @@ Entity::Entity()
     position = glm::vec3(0);
     speed = 0;
 }
+void Entity::UpdatePos(const float incrementX, const float incrementY)
+{
+    position.x += incrementX;
+    position.y += incrementY;
+}
 
 void Entity::Update(float deltaTime)
 {
