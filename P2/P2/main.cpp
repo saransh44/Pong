@@ -18,8 +18,8 @@
 
 #include <ctime> 
 
-#include<stdlib.h>
-#include<stdio.h>
+#include<stdlib.h> //why does srand compile if you comment this out? weird.
+//#include<stdio.h>
 
 //using namespace std;
 SDL_Window* displayWindow;
@@ -178,7 +178,7 @@ void totallyNotFakeCollisionProtocol() {
     yDistanceFromPad1 = fabs(ball.position.y - leftPaddle.position.y);
 
     if (xDistanceFromPad1 < padCollisionWidth && yDistanceFromPad1 < padCollisionHeight) {
-        ballPosIncrementX *= -1.001;
+        ballPosIncrementX *= -1;
     }
 
     xDistanceFromPad2 = fabs(ball.position.x - rightPaddle.position.x);
@@ -187,15 +187,15 @@ void totallyNotFakeCollisionProtocol() {
     //std::cout << xDistanceFromPad2 << std::endl;
 
     if(xDistanceFromPad2 < padCollisionWidth && yDistanceFromPad2 < padCollisionHeight) {
-        ballPosIncrementX *= -1.001;
+        ballPosIncrementX *= -1;
     }
 
     if (ball.position.y > 3.6) {
-        ballPosIncrementY *= -1.001;
+        ballPosIncrementY *= -1;
     }
 
     if (ball.position.y < -3.6) {
-        ballPosIncrementY *= -1.001;
+        ballPosIncrementY *= -1;
     }
 
     //Win/lose conditionals
