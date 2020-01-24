@@ -21,9 +21,7 @@ public:
     //glm::vec3 acceleration;
     
     float speed;
-    
-    GLuint textureID;
-    
+        
     Entity();
     
     void UpdatePos(const float incrementX, const float incrementY);
