@@ -25,7 +25,7 @@
 SDL_Window* displayWindow;
 bool gameIsRunning = true;
 
-//ShaderProgram plain;
+ShaderProgram plain;
 ShaderProgram textured;
 glm::mat4 viewMatrix, modelMatrix, projectionMatrix;
 
@@ -36,7 +36,7 @@ Entity rightPaddle, leftPaddle, ball;
 glm::vec3 paddleSizing = glm::vec3(0.3f, 1.2f, 0.0f);
 glm::vec3 ballSizing = glm::vec3(0.2f, 0.2f, 0.0f);
 
-ShaderProgram unTextured;
+//ShaderProgram unTextured;
 
 float ballPosIncrementX;
 float ballPosIncrementY;
@@ -133,18 +133,24 @@ void Initialize() {
 
     glViewport(0, 0, 640, 480);
 
-    //plain.Load("shaders/vertex_textured.glsl", "shaders/fragment_textured.glsl");
+    plain.Load("shaders/vertex_textured.glsl", "shaders/fragment_textured.glsl");
 
     viewMatrix = glm::mat4(1.0f);
     //modelMatrix = glm::mat4(1.0f); //modelMatrix is used elegantly in Entity.cpp
     projectionMatrix = glm::ortho(-5.0f, 5.0f, -3.75f, 3.75f, -1.0f, 1.0f);
 
-    unTextured.Load("shaders/vertex.glsl", "shaders/fragment.glsl");
+    //unTextured.Load("shaders/vertex.glsl", "shaders/fragment.glsl");
 
-    unTextured.SetProjectionMatrix(projectionMatrix);
-    unTextured.SetViewMatrix(viewMatrix);
-    unTextured.SetColor(1.0f, 1.0f, 1.0f, 1.0f);
-    glUseProgram(unTextured.programID);
+    plain.SetProjectionMatrix(projectionMatrix);
+    plain.SetViewMatrix(viewMatrix);
+    plain.SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glUseProgram(plain.programID);
+
+
+    //unTextured.SetProjectionMatrix(projectionMatrix);
+    //unTextured.SetViewMatrix(viewMatrix);
+    //unTextured.SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+    //glUseProgram(unTextured.programID);
 
     //plain.SetModelMatrix(modelMatrix);
 
@@ -157,7 +163,7 @@ void Initialize() {
 
     glUseProgram(textured.programID);
 
-    //glUseProgram(plain.programID);
+    glUseProgram(plain.programID);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -297,9 +303,13 @@ void Render() {
         //gameIsRunning = false;
     }
 
-    rightPaddle.Render(&unTextured, paddleSizing);
-    leftPaddle.Render(&unTextured, paddleSizing);
-    ball.Render(&unTextured, ballSizing);
+    //rightPaddle.Render(&unTextured, paddleSizing);
+    //leftPaddle.Render(&unTextured, paddleSizing);
+    //ball.Render(&unTextured, ballSizing);
+
+    rightPaddle.Render(&plain, paddleSizing);
+    leftPaddle.Render(&plain, paddleSizing);
+    ball.Render(&plain, ballSizing);
 
     SDL_GL_SwapWindow(displayWindow);
 }
